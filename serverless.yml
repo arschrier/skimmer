@@ -26,7 +26,7 @@ provider:
 
 # you can overwrite defaults here
 #  stage: dev
-#  region: us-east-1
+  region: us-east-2
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -45,8 +45,9 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+  environment:
+    access_token: ${ssm:/digital_ocean_access_token~true}
+    skim_snapshots: ${ssm:/digital_ocean_droplet_id~true}
 
 # you can add packaging information here
 #package:
@@ -58,8 +59,8 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  skim_snapshots:
+    handler: snapshot_handler.skim_snapshots
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
