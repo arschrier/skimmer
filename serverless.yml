@@ -26,7 +26,7 @@ provider:
 
 # you can overwrite defaults here
 #  stage: dev
-  region: us-east-2
+  region: ${self:custom.region, 'us-east-2'}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -46,8 +46,8 @@ provider:
 
 # you can define service wide environment variables here
   environment:
-    access_token: ${ssm:/digital_ocean_access_token~true}
-    skim_snapshots: ${ssm:/digital_ocean_droplet_id~true}
+    access_token: ${self:custom.access_token}
+    skim_snapshots: ${self:custom.skim_snapshots.droplets}
 
 # you can add packaging information here
 #package:
@@ -61,6 +61,10 @@ provider:
 functions:
   skim_snapshots:
     handler: snapshot_handler.skim_snapshots
+    events:
+      - schedule:
+          rate: ${self:custom.skim_snapshots.schedule.rate, 'rate(1 day)'}
+          enabled: ${self:custom.skim_snapshots.schedule.enabled, true}
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -115,3 +119,5 @@ functions:
 
 plugins:
   - serverless-ruby-layer
+
+custom: ${file(.config/serverless.yml)}
